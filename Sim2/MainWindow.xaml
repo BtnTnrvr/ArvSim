@@ -1,0 +1,36 @@
+﻿<Window x:Class="Sim2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Sim2.UserControls"
+        Title="Arvento-Sim" Height="750" Width="880" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel 
+            x:Name="contentStackPanel" 
+            Grid.Row="1" >
+        </StackPanel>
+        <StackPanel 
+            x:Name="simPageStackPanel" 
+            Grid.Row="1">
+        </StackPanel>
+        <TabControl 
+            x:Name="tabControl" 
+            Grid.Row="1" 
+            PreviewMouseDoubleClick="TabItem_MouseDoubleClick">
+        </TabControl>
+        <StackPanel Grid.Row="0" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Top" 
+                    Margin="10">
+            <Button Content="Open File"
+                    x:Name="file2ReadButton"
+                    Click="File2ReadButton_Click"
+                    Width="200"
+                    Height="35"
+                    Margin="0,10,0,10"/>
+        </StackPanel>
+    </Grid>
+</Window>
