@@ -10,7 +10,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Controls.Primitives;
 using Sim2.Helper;
-using Sim2.ViewModels;
 using System.Windows.Media;
 
 namespace Sim2
@@ -22,7 +21,6 @@ namespace Sim2
         {
             InitializeComponent();
             tabControl.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
-            DataContext = new SimPageProcessViewModel();
         }
         public List<PacketModel> ProcessData(string fileContents)
         {
@@ -115,9 +113,9 @@ namespace Sim2
         }
         public void UpdateTabColor(int tabIndex, bool v)
         {
-            foreach( var item in (this.tabControl.Items))
+            foreach( var item in (this.tabControl.Items)) 
             {
-                if (v && ((TabItem)item).Tag.ToString().Equals(tabIndex.ToString()))
+                if (v && ((TabItem)item).Tag.ToString().Equals(tabIndex.ToString())) 
                 {
                     ((TabItem)item).Background = Brushes.LightGreen;
                 }

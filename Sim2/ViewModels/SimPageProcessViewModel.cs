@@ -11,10 +11,6 @@ namespace Sim2.ViewModels
         {
             _displayedDataList = items.ToList();
         }
-        public SimPageProcessViewModel() 
-        {
-            
-        }
         private int _currentIndex;
         public int CurrentIndex
         {
@@ -67,9 +63,15 @@ namespace Sim2.ViewModels
                 OnPropertyChanged(nameof(StopAfterIteration));
             }
         }
-        public void changeColorOfTab(string tabName, bool isActive)
+        private bool _isIterationContinue = false;
+        public bool IsIterationContinue
         {
-
+            get { return _isIterationContinue; }
+            set 
+            {
+                _isIterationContinue = value;
+                OnPropertyChanged(nameof(IsIterationContinue));
+            }
         }
         public bool _isPaused = false;
         public bool IsPaused

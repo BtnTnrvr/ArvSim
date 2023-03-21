@@ -46,7 +46,7 @@
             <ComboBoxItem Content="testexa7" />
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Device: " VerticalAlignment="Center"/>
-                <TextBox Width="60" x:Name="ComboBoxTextBox" ></TextBox>
+                <TextBox Width="60" x:Name="ComboBoxTextBox"></TextBox>
             </StackPanel>
         </ComboBox>
         <CheckBox x:Name="chkReverseLoop" 

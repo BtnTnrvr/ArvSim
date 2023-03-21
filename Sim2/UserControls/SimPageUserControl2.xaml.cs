@@ -39,14 +39,18 @@ namespace Sim2.UserControls
             comboBoxTestexa.SelectionChanged += Input_TextChanged;
         }
         public void ProcessItems()
-        {
+        {            
             Thread thread = new Thread(() =>
             {
                 while (true)
                 {
+                    _processviewModel.IsIterationContinue = true;
+                    IterationChecker();
                     if (_processviewModel.StopAfterIteration)
                     {
                         _processviewModel.StopAfterIteration = false;
+                        _processviewModel.IsIterationContinue = false;  
+                        IterationChecker();
                         return;
                     }
                     if (_processviewModel.ReverseloopEnabled)
@@ -62,7 +66,7 @@ namespace Sim2.UserControls
                         _processHelper.NormalProgress();
                         break;
                     }
-                }
+                }                
             });
             thread.Start();
         }
@@ -169,9 +173,7 @@ namespace Sim2.UserControls
             if (btnPause.IsEnabled == true)
             {
                 btnContinue.IsEnabled = false;
-            }
-            MainWindow win = (MainWindow)Window.GetWindow(this);
-            win.UpdateTabColor(_tabIndex, true);
+            }                    
         }
         private void btnPause_Click(object sender, RoutedEventArgs e)
         {
@@ -186,9 +188,7 @@ namespace Sim2.UserControls
             if (btnContinue.IsEnabled == true)
             {
                 btnPause.IsEnabled = false;
-            }
-            MainWindow win = (MainWindow)Window.GetWindow(this);
-            win.UpdateTabColor(_tabIndex, false);
+            }            
         }
         private void Input_TextChanged(object sender, EventArgs e)
         {
@@ -248,6 +248,25 @@ namespace Sim2.UserControls
                 string selectedTestexa = (string)((TextBox)stackPanel.Children[1]).Text;
                 string updatedPackageurl = WebRequestHelper.packageurl.Replace("{0}", selectedTestexa); // Replacing entered device with placeholder
                 _comboboxviewModel.PackageUrl = updatedPackageurl;
+            }
+        }
+        private void IterationChecker()
+        {
+            if (_processviewModel.IsIterationContinue == true)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MainWindow win = (MainWindow)Window.GetWindow(this); // Looking for the iteration status then coloring tab background as for the iteration status
+                    win.UpdateTabColor(_tabIndex, true);
+                });
+            }
+            else if (_processviewModel.IsIterationContinue == false)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MainWindow win = (MainWindow)Window.GetWindow(this);
+                    win.UpdateTabColor(_tabIndex, false);
+                });
             }
         }
     }
