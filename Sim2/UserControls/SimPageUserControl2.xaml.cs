@@ -16,7 +16,7 @@ namespace Sim2.UserControls
         private SimPageProcessViewModel _processviewModel;
         private SimPageComboBoxViewModel _comboboxviewModel;
         private ProcessHelper _processHelper;
-        private int _tabIndex;
+        private int _tabIndex;        
         public SimPageUserControl2(List<PacketModel> items, int tabIndex = -1)
         {
             _tabIndex = tabIndex;
@@ -39,34 +39,38 @@ namespace Sim2.UserControls
             comboBoxTestexa.SelectionChanged += Input_TextChanged;
         }
         public void ProcessItems()
-        {            
-            Thread thread = new Thread(() =>
+        {
+            Thread thread = new Thread(async () =>
             {
                 while (true)
                 {
+                    if (!_processviewModel.IsActive) // Check whether the control is active
+                    {
+                        break;
+                    }
                     _processviewModel.IsIterationContinue = true;
                     IterationChecker();
                     if (_processviewModel.StopAfterIteration)
                     {
                         _processviewModel.StopAfterIteration = false;
-                        _processviewModel.IsIterationContinue = false;  
+                        _processviewModel.IsIterationContinue = false;
                         IterationChecker();
                         return;
                     }
                     if (_processviewModel.ReverseloopEnabled)
                     {
-                        _processHelper.ReverseLoop();
+                        await _processHelper.ReverseLoop();
                     }
                     else if (_processviewModel.ForwardloopEnabled)
                     {
-                        _processHelper.ForwardLoop();
+                        await _processHelper.ForwardLoop();
                     }
                     else
                     {
-                        _processHelper.NormalProgress();
+                        await _processHelper.NormalProgressAsync();
                         break;
                     }
-                }                
+                }
             });
             thread.Start();
         }
@@ -257,6 +261,10 @@ namespace Sim2.UserControls
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     MainWindow win = (MainWindow)Window.GetWindow(this); // Looking for the iteration status then coloring tab background as for the iteration status
+                    if (win == null)
+                    {
+                        return;
+                    }
                     win.UpdateTabColor(_tabIndex, true);
                 });
             }
@@ -265,6 +273,10 @@ namespace Sim2.UserControls
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     MainWindow win = (MainWindow)Window.GetWindow(this);
+                    if (win == null)
+                    {
+                        return;
+                    }
                     win.UpdateTabColor(_tabIndex, false);
                 });
             }

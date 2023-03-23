@@ -7,6 +7,7 @@ namespace Sim2.ViewModels
 {
     public class SimPageProcessViewModel : INotifyPropertyChanged
     {
+        public SimPageProcessViewModel() { }
         public SimPageProcessViewModel(List<PacketModel> items)
         {
             _displayedDataList = items.ToList();
@@ -73,7 +74,7 @@ namespace Sim2.ViewModels
                 OnPropertyChanged(nameof(IsIterationContinue));
             }
         }
-        public bool _isPaused = false;
+        private bool _isPaused = false;
         public bool IsPaused
         {
             get { return _isPaused; }
@@ -81,6 +82,16 @@ namespace Sim2.ViewModels
             {
                 _isPaused = value;
                 OnPropertyChanged(nameof(IsPaused));
+            }
+        }
+        private bool _isActive = true;
+        public bool IsActive
+        {
+            get { return _isActive; }
+            set
+            {
+                _isActive = value;
+                OnPropertyChanged(nameof(IsActive));
             }
         }
         protected void OnPropertyChanged(string propertyName)

@@ -6,7 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:Sim2.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="820">
+             d:DesignHeight="450" d:DesignWidth="870">
     <Grid x:Name="root">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -17,7 +17,8 @@
             <ColumnDefinition Width="300" />
             <ColumnDefinition Width="180" />
             <ColumnDefinition Width="40" />
-            <ColumnDefinition Width="350" />
+            <ColumnDefinition Width="70" />
+            <ColumnDefinition Width="280" />
         </Grid.ColumnDefinitions>
         <Label Content="Driver Name:" 
              Grid.Row="0"
@@ -100,12 +101,13 @@
              Width="75"
              Height="30"/>
         <xctk:DateTimePicker Name="timePicker"            
-             Grid.Column="3"
+             Grid.Column="4"
              Grid.Row="0"
              HorizontalAlignment="Center" 
              VerticalAlignment="Center"
-             Width="210"
-             Height="25"/>
+             Width="240"
+             Height="25"
+             Margin="10,10,10,10"/>
         <Button Name="btnDateTimer"  
              Content="Start"
              IsEnabled="{Binding AreButtonsEnabled}"
@@ -113,13 +115,13 @@
              Width="80" 
              Height="30"
              Grid.Row="1"
-             Grid.Column="3"
+             Grid.Column="4"
              HorizontalAlignment="Center"
              Margin="10,10,10,10"/>
         <ListView Name="listViewData"
              ItemsSource="{Binding DisplayedDataList}"
              Grid.Row="3" 
-             Grid.ColumnSpan="4" 
+             Grid.ColumnSpan="5" 
              Grid.Column="0">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
@@ -176,6 +178,15 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
+                        <GridViewColumn Header="SPEED">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="Gray" BorderThickness=".5" Margin="-6,-3">
+                                        <TextBlock Text="{Binding SPEED}" Margin="5" Width="50"/>
+                                    </Border>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                         <GridViewColumn Header="MED">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
@@ -208,15 +219,6 @@
                                 <DataTemplate>
                                     <Border BorderBrush="Gray" BorderThickness=".5" Margin="-6,-3">
                                         <TextBlock Text="{Binding LONGITUDE}" Margin="5" Width="60"/>
-                                    </Border>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="SPEED">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Border BorderBrush="Gray" BorderThickness=".5" Margin="-6,-3">
-                                        <TextBlock Text="{Binding SPEED}" Margin="5" Width="50"/>
                                     </Border>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>

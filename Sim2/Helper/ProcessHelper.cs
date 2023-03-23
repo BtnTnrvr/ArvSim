@@ -4,6 +4,7 @@ using Sim2.ViewModels;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace Sim2.Helper
@@ -20,11 +21,11 @@ namespace Sim2.Helper
             _simPageUserControl2.listViewData.ItemsSource = _processviewModel.DisplayedDataList; 
             _comboboxviewModel = comboBoxViewModel;
         }        
-        public void ReverseLoop()
-        {
+        public async Task ReverseLoop()
+        {            
             for (int i = 0; i < _processviewModel.DisplayedDataList.Count; i++)
             {
-                UpdateBackgroundListView();
+                await UpdateBackgroundListViewAsync();
                 _processviewModel.CurrentIndex = i;
                 MoveToTheNextLine();
                 TimerLoop();
@@ -33,7 +34,7 @@ namespace Sim2.Helper
 
             for (int i = _processviewModel.DisplayedDataList.Count - 1; i >= -1; i--)
             {
-                UpdateBackgroundListView();
+                await UpdateBackgroundListViewAsync();
                 _processviewModel.CurrentIndex = i;
                 MoveToTheNextLine();
                 TimerLoop();
@@ -44,14 +45,14 @@ namespace Sim2.Helper
             {
                 _processviewModel.DisplayedDataList[_processviewModel.CurrentIndex].BackgroundColor = Brushes.LightGreen;
             }
-            UpdateBackgroundListView();
+            await UpdateBackgroundListViewAsync();
             ResetBackgroundListView();
         }
-        public void ForwardLoop()
+        public async Task ForwardLoop()
         {
             for (int i = 0; i < _processviewModel.DisplayedDataList.Count; i++)
             {
-                UpdateBackgroundListView();
+                await UpdateBackgroundListViewAsync();
                 _processviewModel.CurrentIndex = i;
                 MoveToTheNextLine();
                 TimerLoop();
@@ -63,16 +64,16 @@ namespace Sim2.Helper
                 _processviewModel.CurrentIndex = 0;
             }
         }
-        public void NormalProgress()
+        public async Task NormalProgressAsync()
         {
             for (int i = 0; i < _processviewModel.DisplayedDataList.Count; i++)
             {
-                UpdateBackgroundListView();
+                await UpdateBackgroundListViewAsync();
                 _processviewModel.CurrentIndex = i;
                 MoveToTheNextLine();
                 TimerLoop();
             }
-            UpdateBackgroundListView();
+            await UpdateBackgroundListViewAsync();
         }
         private void ResetBackgroundListView()
         {
@@ -95,7 +96,7 @@ namespace Sim2.Helper
                 }
             }
         }
-        public void MoveToTheNextLine()
+        private void MoveToTheNextLine()
         {
             if (_processviewModel.CurrentIndex + 1 < _processviewModel.DisplayedDataList.Count) // Update the background color of the next row of data to yellow and increment the current index
             {
@@ -104,7 +105,7 @@ namespace Sim2.Helper
             }
             _processviewModel.CurrentIndex++;
         }
-        private void UpdateBackgroundListView()
+        private async Task UpdateBackgroundListViewAsync()
         {
             if (_processviewModel.CurrentIndex < 0 || _processviewModel.CurrentIndex >= _processviewModel.DisplayedDataList.Count)
             {
@@ -119,7 +120,7 @@ namespace Sim2.Helper
                 _simPageUserControl2.listViewData.ItemsSource = _processviewModel.DisplayedDataList;
             });
             var webRequestHelper = new WebRequestHelper();
-            webRequestHelper.SendToComms(_processviewModel.CurrentIndex, _processviewModel.DisplayedDataList, _comboboxviewModel);
+            await webRequestHelper.SendToComms(_processviewModel.CurrentIndex, _processviewModel.DisplayedDataList, _comboboxviewModel);
         }
     }
 }

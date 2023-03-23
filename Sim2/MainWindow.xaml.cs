@@ -11,12 +11,14 @@ using System.Windows.Input;
 using System.Windows.Controls.Primitives;
 using Sim2.Helper;
 using System.Windows.Media;
+using Sim2.ViewModels;
 
 namespace Sim2
 {
     public partial class MainWindow : Window
     {
         private int globalIndex = 0;
+        private SimPageProcessViewModel _processviewModel;
         public MainWindow()
         {
             InitializeComponent();
@@ -76,9 +78,11 @@ namespace Sim2
         {
             var menu = new ContextMenu();
             var deleteItem = new MenuItem { Header = "Delete" };
-            
+
             deleteItem.Click += (sender, e) => // Set up a click event handler for the delete MenuItem that removes the TabItem from the tabControl's Items collection.
             {
+                _processviewModel = new SimPageProcessViewModel();
+                _processviewModel.IsActive = false; // IsActive property that will stopped the iteration after delete
                 tabControl.Items.Remove(tabItem);
             };
             menu.Items.Add(deleteItem);
@@ -125,22 +129,6 @@ namespace Sim2
                 }
             }
             var tabControlList = this.tabControl.Items;
-        }
-        public static IEnumerable<T> FindVisualChildren<T>(DependencyObject rootObject) where T : DependencyObject
-        {
-            if (rootObject != null)
-            {
-                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(rootObject); i++)
-                {
-                    DependencyObject child = VisualTreeHelper.GetChild(rootObject, i);
-
-                    if (child != null && child is T)
-                        yield return (T)child;
-
-                    foreach (T childOfChild in FindVisualChildren<T>(child))
-                        yield return childOfChild;
-                }
-            }
         }
     }
 }
