@@ -29,7 +29,6 @@ namespace Sim2.Helper
                 _processviewModel.CurrentIndex = i;
                 MoveToTheNextLine();
                 //Thread.Sleep(_processviewModel.DisplayedDataList[_processviewModel.CurrentIndex].TimeDifferenceAsTimeSpan);
-
                 TimerLoop();
             }
             ResetBackgroundListView();
@@ -57,8 +56,8 @@ namespace Sim2.Helper
                 UpdateBackgroundListViewAsync();
                 _processviewModel.CurrentIndex = i;
                 MoveToTheNextLine();
-                Thread.Sleep(_processviewModel.DisplayedDataList[_processviewModel.CurrentIndex].TimeDifferenceAsTimeSpan);
-                //TimerLoop();
+                //Thread.Sleep(_processviewModel.DisplayedDataList[_processviewModel.CurrentIndex].TimeDifferenceAsTimeSpan);
+                TimerLoop();
             }
             ResetBackgroundListView();
 

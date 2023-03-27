@@ -100,7 +100,7 @@
              HorizontalAlignment="Left"
              Width="75"
              Height="30"/>
-        <xctk:DateTimeUpDown Name="timePicker"            
+        <xctk:DateTimePicker Name="timePicker"            
              Grid.Column="4"
              Grid.Row="0"
              HorizontalAlignment="Center" 
