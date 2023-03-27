@@ -40,7 +40,7 @@ namespace Sim2.UserControls
         }
         public void ProcessItems()
         {
-            Thread thread = new Thread(async () =>
+            Thread thread = new Thread(() =>
             {
                 while (true)
                 {
@@ -59,15 +59,15 @@ namespace Sim2.UserControls
                     }
                     if (_processviewModel.ReverseloopEnabled)
                     {
-                        await _processHelper.ReverseLoop();
+                        _processHelper.ReverseLoop();
                     }
                     else if (_processviewModel.ForwardloopEnabled)
                     {
-                        await _processHelper.ForwardLoop();
+                        _processHelper.ForwardLoop();
                     }
                     else
                     {
-                        await _processHelper.NormalProgressAsync();
+                        _processHelper.NormalProgressAsync();
                         break;
                     }
                 }

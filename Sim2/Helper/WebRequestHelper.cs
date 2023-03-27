@@ -3,123 +3,54 @@ using Sim2.Models;
 using Sim2.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace Sim2.Helper
 {
     public class WebRequestHelper
     {
-        static object control = new object();
         public const string packageurl = "https://node.arvento.com/arvento?app=desktop&user=okan.sultan82&pin1=Btn745896!&pkt=U519,PLOG,{0},";
-        public async Task SendToComms(int index, List<PacketModel> _displayedDataList, SimPageComboBoxViewModel comboboxviewModel)
+        public void SendToComms(int index, List<PacketModel> displayedDataList, SimPageComboBoxViewModel comboboxviewModel, int maxRetryCount = 3, int retryDelayInSeconds = 1)
         {
             var filePath = "C:\\Users\\BtnTn\\OneDrive\\Masaüstü\\Simulasyon Publish\\log.txt";
-            try
-            {                
-                using (StreamWriter logWriter = new StreamWriter(filePath, true))
-                {
-                    logWriter.WriteLine($"Method called with index {index}");
-                }
+            var dataToSend = displayedDataList[index];
+            var utcnow = DateTime.UtcNow; // Changing the time zone with UTC date time
+            dataToSend.GMTDATETIME = utcnow.ToString("yyyyMMddHHmmss");
 
-                TaskScheduler.UnobservedTaskException += (object sender, UnobservedTaskExceptionEventArgs eventArgs) =>
-                {
-                    eventArgs.SetObserved();
-                    ((AggregateException)eventArgs.Exception).Handle(ex =>
-                    {
-                        lock (control)
-                        {
-                            using (StreamWriter writer = new StreamWriter(filePath, true)) // Log the unobserved task exception
-                            {
-                                writer.WriteLine($"Unobserved task exception: {ex.GetType()}");
-                                return true;
-                            }
-                        }
-                    });
-                };
+            if (displayedDataList[index].BackgroundColor == Brushes.LightGreen)
+            {
+                int retryCount = 0;
+                bool success = false;
+                var log = new Log(filePath);
 
-                var dataToSend = _displayedDataList[index];
-                var utcnow = DateTime.UtcNow; // Changing the time zone with UTC date time
-                dataToSend.GMTDATETIME = utcnow.ToString("yyyyMMddHHmmss");
-                var timeOut = 30000;
-
-                if (_displayedDataList[index].BackgroundColor == Brushes.LightGreen)
+                while (retryCount <= maxRetryCount && !success)
                 {
                     try
                     {
                         string url = GenerateUrlFromPacketModel(dataToSend, comboboxviewModel);
                         Console.WriteLine(url); // Checking url
-                        try
-                        {
-                            lock (control)
-                            {
-                                using (StreamWriter writer = new StreamWriter(filePath, true)) // Log the URL and local time to the log file
-                                {
-                                    writer.WriteLine($"{DateTime.Now} - URL: {url}");
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("Error writing to log file: " + ex.Message);
-                        }
-                        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                        request.ContinueTimeout = timeOut;
-                        request.Timeout = timeOut;
-                        request.ReadWriteTimeout = timeOut;
-                        request.Method = "GET";
-                        request.ContentType = "application/json";
-                        request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
-                        using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync()) // Send the request and handle the response
-                        using (Stream stream = response.GetResponseStream())
-                        using (StreamReader reader = new StreamReader(stream))
-                        {
-                            string responseText = await reader.ReadToEndAsync();                            
-                            try
-                            {
-                                lock (control)
-                                {
-                                    using (StreamWriter writer = new StreamWriter(filePath, true)) // Log the response of the url
-                                    {
-                                        writer.WriteLine($"{DateTime.Now} - Response: " + responseText);
-                                    }
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                lock (control)
-                                {
-                                    using (StreamWriter writer = new StreamWriter(filePath, true)) // Log the response of the url
-                                    {
-                                        writer.WriteLine($"Error writing to log file: {ex.Message}");
-                                    }
-                                }
-                            }
-                        }
+                        log.WriteUrlLog(url);
+                        RequestHelper requestHelper = new RequestHelper(log);
+                        var response = requestHelper.HttpGet(url);
+                        log.WriteResponseLog(response);
+
+                        success = true;
                     }
                     catch (Exception ex)
                     {
-                        lock (control)
+                        retryCount++;
+                        if (retryCount > maxRetryCount)
                         {
-                            using (StreamWriter writer = new StreamWriter(filePath, true))
-                            {
-                                writer.WriteLine("Exception: " + ex.Message);
-                            }
+                            log.WriteErrorLog(ex);
+                        }
+                        else
+                        {
+                            log.WriteRetryLog(retryCount, retryDelayInSeconds);
                         }
                     }
-                }
-            }
-            catch (Exception ex)
-            {
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine($"Error: {ex.Message}");
-                    writer.WriteLine($"Stack trace: {ex.StackTrace}");
                 }
             }
         }

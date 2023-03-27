@@ -21,20 +21,22 @@ namespace Sim2.Helper
             _simPageUserControl2.listViewData.ItemsSource = _processviewModel.DisplayedDataList; 
             _comboboxviewModel = comboBoxViewModel;
         }        
-        public async Task ReverseLoop()
+        public void ReverseLoop()
         {            
             for (int i = 0; i < _processviewModel.DisplayedDataList.Count; i++)
             {
-                await UpdateBackgroundListViewAsync();
+                UpdateBackgroundListViewAsync();
                 _processviewModel.CurrentIndex = i;
                 MoveToTheNextLine();
+                //Thread.Sleep(_processviewModel.DisplayedDataList[_processviewModel.CurrentIndex].TimeDifferenceAsTimeSpan);
+
                 TimerLoop();
             }
             ResetBackgroundListView();
 
             for (int i = _processviewModel.DisplayedDataList.Count - 1; i >= -1; i--)
             {
-                await UpdateBackgroundListViewAsync();
+                UpdateBackgroundListViewAsync();
                 _processviewModel.CurrentIndex = i;
                 MoveToTheNextLine();
                 TimerLoop();
@@ -45,17 +47,18 @@ namespace Sim2.Helper
             {
                 _processviewModel.DisplayedDataList[_processviewModel.CurrentIndex].BackgroundColor = Brushes.LightGreen;
             }
-            await UpdateBackgroundListViewAsync();
+            UpdateBackgroundListViewAsync();
             ResetBackgroundListView();
         }
-        public async Task ForwardLoop()
+        public void ForwardLoop()
         {
             for (int i = 0; i < _processviewModel.DisplayedDataList.Count; i++)
             {
-                await UpdateBackgroundListViewAsync();
+                UpdateBackgroundListViewAsync();
                 _processviewModel.CurrentIndex = i;
                 MoveToTheNextLine();
-                TimerLoop();
+                Thread.Sleep(_processviewModel.DisplayedDataList[_processviewModel.CurrentIndex].TimeDifferenceAsTimeSpan);
+                //TimerLoop();
             }
             ResetBackgroundListView();
 
@@ -64,16 +67,16 @@ namespace Sim2.Helper
                 _processviewModel.CurrentIndex = 0;
             }
         }
-        public async Task NormalProgressAsync()
+        public void NormalProgressAsync()
         {
             for (int i = 0; i < _processviewModel.DisplayedDataList.Count; i++)
             {
-                await UpdateBackgroundListViewAsync();
+                UpdateBackgroundListViewAsync();
                 _processviewModel.CurrentIndex = i;
                 MoveToTheNextLine();
                 TimerLoop();
             }
-            await UpdateBackgroundListViewAsync();
+            UpdateBackgroundListViewAsync();
         }
         private void ResetBackgroundListView()
         {
@@ -105,7 +108,7 @@ namespace Sim2.Helper
             }
             _processviewModel.CurrentIndex++;
         }
-        private async Task UpdateBackgroundListViewAsync()
+        private void UpdateBackgroundListViewAsync()
         {
             if (_processviewModel.CurrentIndex < 0 || _processviewModel.CurrentIndex >= _processviewModel.DisplayedDataList.Count)
             {
@@ -120,7 +123,7 @@ namespace Sim2.Helper
                 _simPageUserControl2.listViewData.ItemsSource = _processviewModel.DisplayedDataList;
             });
             var webRequestHelper = new WebRequestHelper();
-            await webRequestHelper.SendToComms(_processviewModel.CurrentIndex, _processviewModel.DisplayedDataList, _comboboxviewModel);
+            webRequestHelper.SendToComms(_processviewModel.CurrentIndex, _processviewModel.DisplayedDataList, _comboboxviewModel);
         }
     }
 }
