@@ -123,9 +123,7 @@
     <Compile Include="UserControls\SimPageUserControl2.xaml.cs">
       <DependentUpon>SimPageUserControl2.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\SimPageComboBoxViewModel.cs" />
     <Compile Include="ViewModels\SimPageProcessViewModel.cs" />
-    <Compile Include="ViewModels\SimPageRegionViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

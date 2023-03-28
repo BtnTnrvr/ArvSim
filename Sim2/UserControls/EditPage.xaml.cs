@@ -1,4 +1,4 @@
-﻿using Sim2.Models;  
+﻿using Sim2.Models;
 using System.Windows;
 
 namespace Sim2.UserControls
@@ -9,7 +9,7 @@ namespace Sim2.UserControls
         public EditPage(PacketModel selectedItem)
         {
             InitializeComponent();
-            
+
             EditedItem = new PacketModel() // Create a copy of the selected item to modify
             {
                 NODE = selectedItem.NODE,

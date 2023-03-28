@@ -1,6 +1,6 @@
-﻿using AutoMapper;
-using Sim2.Models;
+﻿using Sim2.Models;
 using Sim2.ViewModels;
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -12,9 +12,8 @@ namespace Sim2.Helper
     public class WebRequestHelper
     {
         public const string packageurl = "https://node.arvento.com/arvento?app=desktop&user=okan.sultan82&pin1=Btn745896!&pkt=U519,PLOG,{0},";
-        public void SendToComms(int index, List<PacketModel> displayedDataList, SimPageComboBoxViewModel comboboxviewModel, int maxRetryCount = 3, int retryDelayInSeconds = 1)
+        public void SendToComms(int index, List<PacketModel> displayedDataList, SimPageProcessViewModel processViewModel, int maxRetryCount = 3, int retryDelayInSeconds = 1)
         {
-            var filePath = "C:\\Users\\BtnTn\\OneDrive\\Masaüstü\\Simulasyon Publish\\log.txt";
             var dataToSend = displayedDataList[index];
             var utcnow = DateTime.UtcNow; // Changing the time zone with UTC date time
             dataToSend.GMTDATETIME = utcnow.ToString("yyyyMMddHHmmss");
@@ -23,18 +22,15 @@ namespace Sim2.Helper
             {
                 int retryCount = 0;
                 bool success = false;
-                var log = new Log(filePath);
+                var log = new Log();
 
                 while (retryCount <= maxRetryCount && !success)
                 {
                     try
                     {
-                        string url = GenerateUrlFromPacketModel(dataToSend, comboboxviewModel);
-                        Console.WriteLine(url); // Checking url
-
+                        string url = GenerateUrlFromPacketModel(dataToSend, processViewModel);
                         log.WriteUrlLog(url);
-                        RequestHelper requestHelper = new RequestHelper(log);
-                        var response = requestHelper.HttpGet(url);
+                        var response = RequestHelper.HttpGet(url);
                         log.WriteResponseLog(response);
 
                         success = true;
@@ -54,7 +50,7 @@ namespace Sim2.Helper
                 }
             }
         }
-        public string GenerateUrlFromPacketModel(PacketModel packetModel, SimPageComboBoxViewModel comboboxviewModel)
+        public string GenerateUrlFromPacketModel(PacketModel packetModel, SimPageProcessViewModel processViewModel)
         {
             var mapper = new MapperConfiguration(cfg => // Map PacketModel to PlogCsvPacketModel using AutoMapper
             {
@@ -63,7 +59,7 @@ namespace Sim2.Helper
             var plogCsvPacket = mapper.Map<PlogCsvPacketModel>(packetModel);
 
             StringBuilder sb = new StringBuilder();
-            sb.Append(comboboxviewModel.PackageUrl);
+            sb.Append(processViewModel.PackageUrl);
             sb.Append(
                 WebUtility.UrlEncode(plogCsvPacket.PktType) + "," +
                 plogCsvPacket.GMTDateTime + "," +

@@ -17,13 +17,13 @@ namespace Sim2.Helper
                 if (string.IsNullOrEmpty(region))
                 {
                     continue;
-                }                
+                }
                 if (!regionToRgMap.ContainsKey(region)) // If the region is not already mapped to an rg value, map it to the next available rg value
                 {
                     regionToRgMap[region] = "rg" + rgCounter;
                     rgCounter++;
                 }
-            }            
+            }
             foreach (PacketModel item in items) // Loop through the each region in regionList and update the regionList regions property to use the corresponding rg values
             {
                 if (item.REGION != null)
@@ -63,7 +63,7 @@ namespace Sim2.Helper
                 }
             }
             return items;
-        }        
+        }
         public static List<string> GetDistinctRegions(List<PacketModel> items) //Checking All regions
         {
             return items.Where(i => i.REGION != null || i.REGION2 != null || i.REGION3 != null || i.REGION4 != null || i.REGION5 != null)
@@ -71,24 +71,24 @@ namespace Sim2.Helper
                         .Where(r => r != null)
                         .Distinct()
                         .ToList();
-        }        
-        public static List<string> GetREGION(List<PacketModel> items) 
+        }
+        public static List<string> GetREGION(List<PacketModel> items)
         {
             return items.Where(i => i.REGION != null).Select(i => i.REGION).Distinct().ToList();
-        }        
-        public static List<string> GetREGION2(List<PacketModel> items) 
+        }
+        public static List<string> GetREGION2(List<PacketModel> items)
         {
             return items.Where(i => i.REGION2 != null).Select(i => i.REGION2).Distinct().ToList();
-        }        
-        public static List<string> GetREGION3(List<PacketModel> items) 
+        }
+        public static List<string> GetREGION3(List<PacketModel> items)
         {
             return items.Where(i => i.REGION3 != null).Select(i => i.REGION3).Distinct().ToList();
-        }        
-        public static List<string> GetREGION4(List<PacketModel> items) 
+        }
+        public static List<string> GetREGION4(List<PacketModel> items)
         {
             return items.Where(i => i.REGION4 != null).Select(i => i.REGION4).Distinct().ToList();
-        }        
-        public static List<string> GetREGION5(List<PacketModel> items) 
+        }
+        public static List<string> GetREGION5(List<PacketModel> items)
         {
             return items.Where(i => i.REGION5 != null).Select(i => i.REGION5).Distinct().ToList();
         }

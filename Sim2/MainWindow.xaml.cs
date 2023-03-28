@@ -61,12 +61,12 @@ namespace Sim2
             newTab.Tag = globalIndex;
             newTab.Content = new SimPageUserControl2(itemList, globalIndex);
             globalIndex++;
-            tabControl.Items.Add(newTab);            
+            tabControl.Items.Add(newTab);
         }
         private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
         {
             if (tabControl.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
-            {                
+            {
                 foreach (var tab in tabControl.Items.OfType<TabItem>()) // For each TabItem in the tabControl's Items collection, set up a mouse double-click event handler and create a context menu.
                 {
                     tab.MouseDoubleClick += TabItem_MouseDoubleClick;
@@ -97,7 +97,7 @@ namespace Sim2
 
             TextBox textBox = new TextBox();
             textBox.Text = tabItem.Header.ToString();
-            textBox.PreviewKeyDown += TextBox_PreviewKeyDown;            
+            textBox.PreviewKeyDown += TextBox_PreviewKeyDown;
             tabItem.Header = textBox; // Replace the TabItem header with the TextBox
             textBox.Focus();
             textBox.SelectAll();
@@ -108,18 +108,18 @@ namespace Sim2
             {
                 TextBox textBox = sender as TextBox;
                 TabItem tabItem = textBox.Parent as TabItem;
-                
+
                 tabItem.Header = textBox.Text.Trim() == "" ? "New Tab" : textBox.Text; // Restore the TabItem header to a TextBlock
                 tabItem.HeaderTemplate = null;
-                
+
                 e.Handled = true; // Prevent the TextBox from capturing the Enter key
             }
         }
         public void UpdateTabColor(int tabIndex, bool v)
         {
-            foreach( var item in (this.tabControl.Items)) 
+            foreach (var item in (this.tabControl.Items))
             {
-                if (v && ((TabItem)item).Tag.ToString().Equals(tabIndex.ToString())) 
+                if (v && ((TabItem)item).Tag.ToString().Equals(tabIndex.ToString()))
                 {
                     ((TabItem)item).Background = Brushes.LightGreen;
                 }

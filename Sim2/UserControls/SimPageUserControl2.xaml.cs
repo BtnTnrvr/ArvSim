@@ -11,25 +11,20 @@ using System.Windows.Threading;
 namespace Sim2.UserControls
 {
     public partial class SimPageUserControl2 : UserControl
-    {        
-        private SimPageRegionViewModel regionviewModel;
+    {
         private SimPageProcessViewModel _processviewModel;
-        private SimPageComboBoxViewModel _comboboxviewModel;
         private ProcessHelper _processHelper;
-        private int _tabIndex;        
+        private int _tabIndex;
         public SimPageUserControl2(List<PacketModel> items, int tabIndex = -1)
         {
             _tabIndex = tabIndex;
             InitializeComponent();
-            _comboboxviewModel = new SimPageComboBoxViewModel();
 
             _processviewModel = new SimPageProcessViewModel(items); // initialize the _processviewModel instance                                 
-            DataContext = _processviewModel; 
+            DataContext = _processviewModel;
+            _processviewModel.PopulateRegionLists(items); // Getting the regions from viewmodel  
 
-            _processHelper = new ProcessHelper(items, this, _comboboxviewModel); // Pass a reference to this UserControl to the ProcessHelper constructor  
-
-            regionviewModel = new SimPageRegionViewModel();
-            regionviewModel.PopulateRegionLists(items); // Getting the regions from viewmodel         
+            _processHelper = new ProcessHelper(items, this, _processviewModel); // Pass a reference to this UserControl to the ProcessHelper constructor  
 
             btnContinue.IsEnabled = false; // Disable buttons on startup
             btnPause.IsEnabled = false;
@@ -68,6 +63,9 @@ namespace Sim2.UserControls
                     else
                     {
                         _processHelper.NormalProgressAsync();
+                        _processviewModel.StopAfterIteration = false;
+                        _processviewModel.IsIterationContinue = false;
+                        IterationChecker();
                         break;
                     }
                 }
@@ -76,13 +74,13 @@ namespace Sim2.UserControls
         }
         public void Message()
         {
-            regionviewModel.result = MessageBox.Show(
-            "Number of distincts all regions: " + regionviewModel.RegionList.Count + "\r\n" +
-            "Number of distinct region1: " + regionviewModel.Region1List.Count + "\r\n" +
-            "Number of distinct region2: " + regionviewModel.Region2List.Count + "\r\n" +
-            "Number of distinct region3: " + regionviewModel.Region3List.Count + "\r\n" +
-            "Number of distinct region4: " + regionviewModel.Region4List.Count + "\r\n" +
-            "Number of distinct region5: " + regionviewModel.Region5List.Count + "\r\n" +
+            _processviewModel.result = MessageBox.Show(
+            "Number of distincts all regions: " + _processviewModel.RegionList.Count + "\r\n" +
+            "Number of distinct region1: " + _processviewModel.Region1List.Count + "\r\n" +
+            "Number of distinct region2: " + _processviewModel.Region2List.Count + "\r\n" +
+            "Number of distinct region3: " + _processviewModel.Region3List.Count + "\r\n" +
+            "Number of distinct region4: " + _processviewModel.Region4List.Count + "\r\n" +
+            "Number of distinct region5: " + _processviewModel.Region5List.Count + "\r\n" +
             "Driver name changed. New driver name: " + DriverNameTextBox.Text + "\r\n" +
             "Device number changed. New device number: " + comboBoxTestexa.Text,
             "Changes has been detected!", MessageBoxButton.OKCancel);
@@ -92,7 +90,7 @@ namespace Sim2.UserControls
             DriverNameTextBox.IsEnabled = false;
             comboBoxTestexa.IsEnabled = false;
 
-            if (regionviewModel.result == MessageBoxResult.OK)
+            if (_processviewModel.result == MessageBoxResult.OK)
             {
                 btnContinue.IsEnabled = false;
                 btnPause.IsEnabled = true;
@@ -177,7 +175,7 @@ namespace Sim2.UserControls
             if (btnPause.IsEnabled == true)
             {
                 btnContinue.IsEnabled = false;
-            }                    
+            }
         }
         private void btnPause_Click(object sender, RoutedEventArgs e)
         {
@@ -192,7 +190,7 @@ namespace Sim2.UserControls
             if (btnContinue.IsEnabled == true)
             {
                 btnPause.IsEnabled = false;
-            }            
+            }
         }
         private void Input_TextChanged(object sender, EventArgs e)
         {
@@ -210,31 +208,29 @@ namespace Sim2.UserControls
         private void CheckBox_Checked(object sender, RoutedEventArgs e) // Handles the Reverse and Forward loop checked values
         {
             CheckBox checkBox = (CheckBox)sender;
-
             if (checkBox == chkReverseLoop)
             {
                 _processviewModel.ReverseloopEnabled = true;
-                chkForwardLoop.IsEnabled = false;
+                chkForwardLoop.IsChecked = false;
             }
             else if (checkBox == chkForwardLoop)
             {
                 _processviewModel.ForwardloopEnabled = true;
-                chkReverseLoop.IsEnabled = false;
+                chkReverseLoop.IsChecked = false;
             }
         }
-        private void CheckBox_Unchecked(object sender, RoutedEventArgs e) // Handles the Reverse and Forward loop unchecked values
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             CheckBox checkBox = (CheckBox)sender;
-
             if (checkBox == chkReverseLoop)
             {
                 _processviewModel.ReverseloopEnabled = false;
-                chkForwardLoop.IsEnabled = true;
+                chkForwardLoop.IsChecked = false;
             }
             else if (checkBox == chkForwardLoop)
             {
                 _processviewModel.ForwardloopEnabled = false;
-                chkReverseLoop.IsEnabled = true;
+                chkReverseLoop.IsChecked = false;
             }
         }
         private void comboBoxTestexa_SelectedIndexChanged(object sender, EventArgs e)
@@ -242,16 +238,16 @@ namespace Sim2.UserControls
             if (comboBoxTestexa.SelectedItem is ComboBoxItem comboBoxItem)
             {
                 string selectedTestexa = (string)comboBoxItem.Content;
-                _comboboxviewModel.ChosenTestexas.Add(selectedTestexa);
+                _processviewModel.ChosenTestexas.Add(selectedTestexa);
                 comboBoxItem.IsEnabled = false;
                 string updatedPackageurl = WebRequestHelper.packageurl.Replace("{0}", selectedTestexa); // Replacing chosen device with placeholder
-                _comboboxviewModel.PackageUrl = updatedPackageurl;
+                _processviewModel.PackageUrl = updatedPackageurl;
             }
             else if (comboBoxTestexa.SelectedItem is StackPanel stackPanel)
             {
                 string selectedTestexa = (string)((TextBox)stackPanel.Children[1]).Text;
                 string updatedPackageurl = WebRequestHelper.packageurl.Replace("{0}", selectedTestexa); // Replacing entered device with placeholder
-                _comboboxviewModel.PackageUrl = updatedPackageurl;
+                _processviewModel.PackageUrl = updatedPackageurl;
             }
         }
         private void IterationChecker()
