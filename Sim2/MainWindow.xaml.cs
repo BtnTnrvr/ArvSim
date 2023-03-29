@@ -23,6 +23,7 @@ namespace Sim2
         {
             InitializeComponent();
             tabControl.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
+            _processviewModel= new SimPageProcessViewModel();
         }
         public List<PacketModel> ProcessData(string fileContents)
         {
@@ -39,7 +40,7 @@ namespace Sim2
                 string filePath = openFileDialog.FileName;
                 var allModel = ProcessData(File.ReadAllText(filePath));
 
-                if (tabControl.Items.Cast<TabItem>().Any(tab => (int)tab.Tag == globalIndex))
+                if (tabControl.Items.Cast<TabItem>().Any(tab => (int)tab.Tag == globalIndex || tab.Header.ToString() == Path.GetFileName(filePath)))
                 {
                     MessageBoxResult result = MessageBox.Show("This file is already open. Do you want to open it again?", "File already open", MessageBoxButton.YesNo);
                     if (result == MessageBoxResult.Yes)
@@ -58,10 +59,12 @@ namespace Sim2
         {
             TabItem newTab = new TabItem();
             newTab.Header = Path.GetFileName(filePath);
-            newTab.Tag = globalIndex;
-            newTab.Content = new SimPageUserControl2(itemList, globalIndex);
+            int tabIndex = globalIndex;
+            newTab.Tag = tabIndex;
+            newTab.Content = new SimPageUserControl2(itemList, tabIndex);
             globalIndex++;
             tabControl.Items.Add(newTab);
+            _processviewModel.SelectedComboItemsPerTab.Add(tabIndex, new List<string>()); 
         }
         private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
         {

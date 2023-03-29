@@ -136,6 +136,16 @@ namespace Sim2.ViewModels
                 OnPropertyChanged(nameof(PackageUrl));
             }
         }
+        private static Dictionary<int, List<string>> _selectedComboItemsPerTab = new Dictionary<int, List<string>>();
+        public Dictionary<int, List<string>> SelectedComboItemsPerTab
+        {
+            get { return _selectedComboItemsPerTab; }
+            set 
+            { 
+                _selectedComboItemsPerTab = value;
+                OnPropertyChanged(nameof(SelectedComboItemsPerTab));
+            }
+        }        
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

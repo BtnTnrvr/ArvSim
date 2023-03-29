@@ -14,7 +14,7 @@ namespace Sim2.UserControls
     {
         private SimPageProcessViewModel _processviewModel;
         private ProcessHelper _processHelper;
-        private int _tabIndex;
+        private int _tabIndex;        
         public SimPageUserControl2(List<PacketModel> items, int tabIndex = -1)
         {
             _tabIndex = tabIndex;
@@ -238,10 +238,25 @@ namespace Sim2.UserControls
             if (comboBoxTestexa.SelectedItem is ComboBoxItem comboBoxItem)
             {
                 string selectedTestexa = (string)comboBoxItem.Content;
-                _processviewModel.ChosenTestexas.Add(selectedTestexa);
-                comboBoxItem.IsEnabled = false;
                 string updatedPackageurl = WebRequestHelper.packageurl.Replace("{0}", selectedTestexa); // Replacing chosen device with placeholder
                 _processviewModel.PackageUrl = updatedPackageurl;
+                
+                int currentTabIndex = (int)((TabItem)Parent).Tag; // Disable the selected item in other tabs
+                foreach (var kvp in _processviewModel.SelectedComboItemsPerTab)
+                {
+                    int tabIndex = kvp.Key;
+                    List<string> selectedItems = kvp.Value;
+                    if (tabIndex != currentTabIndex && selectedItems.Contains(selectedTestexa))
+                    {
+                        comboBoxTestexa.SelectedItem = null;
+                        comboBoxTestexa.IsEnabled = false;
+                        comboBoxTestexa.IsEnabled = true;
+                        MessageBox.Show("This device is already selected in another tab.", "Device already selected", MessageBoxButton.OK);
+                        return;
+                    }
+                }                
+                _processviewModel.SelectedComboItemsPerTab[currentTabIndex].Clear(); // Add the selected item to the list for the current tab
+                _processviewModel.SelectedComboItemsPerTab[currentTabIndex].Add(selectedTestexa);
             }
             else if (comboBoxTestexa.SelectedItem is StackPanel stackPanel)
             {
