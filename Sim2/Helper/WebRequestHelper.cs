@@ -11,7 +11,7 @@ namespace Sim2.Helper
 {
     public class WebRequestHelper
     {
-        public const string packageurl = "xxxxxxx";
+        public const string packageurl = "xxxxxxxxx";
         public void SendToComms(int index, List<PacketModel> displayedDataList, SimPageProcessViewModel processViewModel, int maxRetryCount = 3, int retryDelayInSeconds = 1)
         {
             var dataToSend = displayedDataList[index];
