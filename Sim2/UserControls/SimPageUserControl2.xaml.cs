@@ -255,7 +255,7 @@ namespace Sim2.UserControls
                         return;
                     }
                 }                
-                _processviewModel.SelectedComboItemsPerTab[currentTabIndex].Clear(); // Add the selected item to the list for the current tab
+                _processviewModel.SelectedComboItemsPerTab[currentTabIndex].Clear(); // Add the selected item to the list for the current tab 
                 _processviewModel.SelectedComboItemsPerTab[currentTabIndex].Add(selectedTestexa);
             }
             else if (comboBoxTestexa.SelectedItem is StackPanel stackPanel)
