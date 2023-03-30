@@ -1,12 +1,9 @@
-﻿using Sim2.Models;
-using Sim2.UserControls;
-using Sim2.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
+using Sim2.ViewModels;
+using Sim2.Models;
+using Sim2.UserControls;
 
 namespace Sim2.Helper
 {
@@ -30,7 +27,7 @@ namespace Sim2.Helper
             "Number of distinct region4: " + _processviewModel.Region4List.Count + "\r\n" +
             "Number of distinct region5: " + _processviewModel.Region5List.Count + "\r\n" +
             "Driver name changed. New driver name: " + _userControl.DriverNameTextBox.Text + "\r\n" +
-            "Device number changed. New device number: " + _userControl.comboBoxTestexa.Text,
+            "Device number changed. New device number: " + _userControl.comboBoxTestexa.SelectedItem,
             "Changes has been detected!", MessageBoxButton.OKCancel);
         }
         public void MessageAction()
@@ -40,7 +37,7 @@ namespace Sim2.Helper
 
             if (_processviewModel.result == MessageBoxResult.OK)
             {
-                _userControl.btnContinue.IsEnabled = false;
+                _userControl.btnContinueDateTimer.IsEnabled = false;
                 _userControl.btnPause.IsEnabled = true;
 
                 _userControl.Dispatcher.BeginInvoke(new Action(() =>
@@ -50,7 +47,7 @@ namespace Sim2.Helper
             }
             else
             {
-                _userControl.btnContinue.IsEnabled = true;
+                _userControl.btnContinueDateTimer.IsEnabled = true;
                 _userControl.btnPause.IsEnabled = false;
                 _userControl.DriverNameTextBox.IsEnabled = true;
                 _userControl.comboBoxTestexa.IsEnabled = true;

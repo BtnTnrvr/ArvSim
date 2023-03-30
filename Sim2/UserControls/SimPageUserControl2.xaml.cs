@@ -29,9 +29,8 @@ namespace Sim2.UserControls
 
             _processHelper = new ProcessHelper(items, this, _processviewModel); // Pass a reference to this UserControl to the ProcessHelper constructor  
 
-            btnContinue.IsEnabled = false; // Disable buttons on startup
             btnPause.IsEnabled = false;
-            btnDateTimer.IsEnabled = false;
+            btnContinueDateTimer.IsEnabled = false;
 
             DriverNameTextBox.TextChanged += Input_ValueChanged; // Is there an input in the textbox and combobox
             comboBoxTestexa.SelectionChanged += Input_ValueChanged;
@@ -100,37 +99,29 @@ namespace Sim2.UserControls
             }
             listViewData.Items.Refresh();
         }
-        private void btnDateTimer_Click(object sender, RoutedEventArgs e)
+        private void btnContinueDateTimer_Click(object sender, RoutedEventArgs e)
         {
-            comboBoxTestexa.IsEnabled = false;
-            DriverNameTextBox.IsEnabled = false;
-            btnDateTimer.IsEnabled = false;
-            btnContinue.IsEnabled = false;
-            _processviewModel.IsPaused = false;
-
-            DateTime selectedDateTime = timePicker.Value ?? DateTime.MinValue;
-            DispatcherTimer timer = new DispatcherTimer(); // Create a DispatcherTimer to check the current time
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += (s, args) =>
-            {
-                if (DateTime.Now >= selectedDateTime)
-                {
-                    timer.Stop();
-                    btnDateTimer.IsEnabled = true;
-                    ProcessItems();
-                    btnPause.IsEnabled = true;
-                }
-            };
-            timer.Start();
-        }
-        private void btnContinue_Click(object sender, RoutedEventArgs e)
-        {
-            btnPause.IsEnabled = true;
-
-            if (_processviewModel.HasShownMessageBox)
+            if (timePicker.Value != null || _processviewModel.HasShownMessageBox)
             {
                 _processviewModel.HasShownMessageBox = false;
-                ProcessItems();
+                comboBoxTestexa.IsEnabled = false;
+                DriverNameTextBox.IsEnabled = false;
+                btnContinueDateTimer.IsEnabled = false;
+                _processviewModel.IsPaused = false;
+
+                DateTime selectedDateTime = timePicker.Value ?? DateTime.MinValue;
+                DispatcherTimer timer = new DispatcherTimer(); // Create a DispatcherTimer to check the current time
+                timer.Interval = TimeSpan.FromSeconds(1);
+                timer.Tick += (s, args) =>
+                {
+                    if (DateTime.Now >= selectedDateTime)
+                    {
+                        timer.Stop();
+                        ProcessItems();
+                        btnPause.IsEnabled = true;
+                    }
+                };
+                timer.Start();
             }
             else
             {
@@ -138,22 +129,18 @@ namespace Sim2.UserControls
                 _messageHelper.MessageAction();
             }
             _processviewModel.IsPaused = false;
-            if (btnPause.IsEnabled == true)
-            {
-                btnContinue.IsEnabled = false;
-            }
         }
         private void btnPause_Click(object sender, RoutedEventArgs e)
         {
             _processviewModel.HasShownMessageBox = true;
-            btnContinue.IsEnabled = true;
+            btnContinueDateTimer.IsEnabled = true;
 
             _processviewModel.IsPaused = !_processviewModel.IsPaused;
             if (_processviewModel.IsPaused)
             {
                 _processviewModel.StopAfterIteration = true;
             }
-            if (btnContinue.IsEnabled == true)
+            if (btnContinueDateTimer.IsEnabled == true)
             {
                 btnPause.IsEnabled = false;
             }
@@ -162,13 +149,11 @@ namespace Sim2.UserControls
         {
             if (DriverNameTextBox.Text.Trim().Length > 0 && comboBoxTestexa.SelectedItem != null)
             {
-                btnContinue.IsEnabled = true;
-                btnDateTimer.IsEnabled = true;
+                btnContinueDateTimer.IsEnabled = true;
             }
             else
             {
-                btnContinue.IsEnabled = false;
-                btnDateTimer.IsEnabled = false;
+                btnContinueDateTimer.IsEnabled = false;
             }
         }
         private void CheckBox_Checked(object sender, RoutedEventArgs e) // Handles the reverse and forward, forward loop checked values

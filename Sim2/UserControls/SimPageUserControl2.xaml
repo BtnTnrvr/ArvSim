@@ -6,23 +6,23 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:Sim2.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="870">
-    <Grid x:Name="root">
+             d:DesignHeight="450" d:DesignWidth="770">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" />
             <ColumnDefinition Width="180" />
-            <ColumnDefinition Width="40" />
-            <ColumnDefinition Width="70" />
-            <ColumnDefinition Width="280" />
+            <ColumnDefinition Width="270" />
         </Grid.ColumnDefinitions>
         <Label Content="Driver Name:" 
              Grid.Row="0"
              Grid.Column="0"
+             VerticalAlignment="Center"
              Margin="10,10,10,10"/>
         <TextBox x:Name="DriverNameTextBox"
              Grid.Column="0" 
@@ -33,55 +33,61 @@
         <Label Content="Device Number" 
              Grid.Row="1" 
              Grid.Column="0"
+             Grid.RowSpan="2"
+             VerticalAlignment="Center"
              Margin="10,10,10,10"/>
         <ComboBox x:Name="comboBoxTestexa" 
              SelectionChanged="comboBoxTestexa_SelectedIndexChanged"
              Grid.Column="0"
              Grid.Row="1"
+             Grid.RowSpan="2"
              Width="180"
              Height="24"
              HorizontalAlignment="Right">
-            <ComboBoxItem Content="testexa10" />
-            <ComboBoxItem Content="testexa9" />
-            <ComboBoxItem Content="testexa8" />
             <ComboBoxItem Content="testexa7" />
+            <ComboBoxItem Content="testexa8" />
+            <ComboBoxItem Content="testexa9" />
+            <ComboBoxItem Content="testexa10" />
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Device: " VerticalAlignment="Center"/>
-                <TextBox Width="60" x:Name="ComboBoxTextBox"></TextBox>
+                <TextBox Width="80" x:Name="ComboBoxTextBox"></TextBox>
             </StackPanel>
         </ComboBox>
         <CheckBox x:Name="chkReverseLoop" 
              IsChecked="{Binding ReverseloopEnabled, Mode=TwoWay}" 
-             ToolTip="When it's checked activates the forward and reverse loop on the listview."
+             ToolTip="When it's checked loop starts from the up to down then down to up on the listview."
              Content="Loop forward and reverse" 
-             Grid.Row="0"
+             Grid.Row="2"
              Grid.Column="1"
              Width="160"
-             Height="35"
+             Height="15"
              Checked="CheckBox_Checked" 
              HorizontalAlignment="Left"
+             VerticalAlignment="Center"
              Unchecked="CheckBox_Unchecked"
-             Margin="10,17,10,10"/>
+             Margin="10,0,0,0"/>
         <CheckBox x:Name="chkForwardLoop" 
              IsChecked="{Binding ForwardloopEnabled, Mode=TwoWay}"  
-             ToolTip="When it's checked activates the forward loop on the listview."
+             ToolTip="When it's checked loop starts up to down on the listview."
              Content="Loop forward" 
              Grid.Row="1"
              Grid.Column="1"
              Width="100"
-             Height="35"
-             HorizontalAlignment="Left"
+             Height="15"
              Checked="CheckBox_Checked" 
+             HorizontalAlignment="Left"
+             VerticalAlignment="Center"             
              Unchecked="CheckBox_Unchecked"
-             Margin="10,17,10,10"/>
-        <Button Name="btnContinue"
+             Margin="10,0,0,0"/>
+        <Button Name="btnContinueDateTimer"
              IsEnabled="{Binding AreButtonsEnabled}"
-             Click="btnContinue_Click" 
+             Click="btnContinueDateTimer_Click" 
              Width="30" 
              Height="30"
              Grid.Row="0"
-             Grid.Column="2"
-             HorizontalAlignment="Center" >
+             Grid.Column="1"
+             HorizontalAlignment="Left" 
+             Margin="10,10,10,10">
             <Image Source="/src/images/play_buttton.png" />
         </Button>
         <Button Name="btnPause"  
@@ -89,35 +95,27 @@
              Click="btnPause_Click" 
              Width="30" 
              Height="30"
-             Grid.Row="1"
-             Grid.Column="2"
-             HorizontalAlignment="Center" >
+             Grid.Row="0"
+             Grid.Column="1"
+             HorizontalAlignment="Center"
+             Margin="10,10,10,10">
             <Image Source="/src/images/pause_button.png" />
         </Button>
         <Label Content="Select Time:" 
              Grid.Row="0" 
-             Grid.Column="3"
-             HorizontalAlignment="Left"
+             Grid.Column="1"
+             HorizontalAlignment="Right"
              Width="75"
-             Height="30"/>
+             Height="30"
+             Margin="10,10,0,10"/>
         <xctk:DateTimePicker Name="timePicker"            
              Grid.Column="4"
              Grid.Row="0"
-             HorizontalAlignment="Center" 
+             HorizontalAlignment="Left" 
              VerticalAlignment="Center"
              Width="240"
              Height="25"
-             Margin="10,10,10,10"/>
-        <Button Name="btnDateTimer"  
-             Content="Start"
-             IsEnabled="{Binding AreButtonsEnabled}"
-             Click="btnDateTimer_Click" 
-             Width="80" 
-             Height="30"
-             Grid.Row="1"
-             Grid.Column="4"
-             HorizontalAlignment="Center"
-             Margin="10,10,10,10"/>
+             Margin="0,10,10,10"/>
         <ListView Name="listViewData"
              ItemsSource="{Binding DisplayedDataList}"
              Grid.Row="3" 
