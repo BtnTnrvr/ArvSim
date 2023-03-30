@@ -11,7 +11,7 @@ namespace Sim2.Helper
 {
     public class WebRequestHelper
     {
-        public const string packageurl = "https://node.arvento.com/arvento?app=desktop&user=okan.sultan82&pin1=Btn745896!&pkt=U519,PLOG,{0},";
+        public const string packageurl = "xxxxx";
         public void SendToComms(int index, List<PacketModel> displayedDataList, SimPageProcessViewModel processViewModel, int maxRetryCount = 3, int retryDelayInSeconds = 1)
         {
             var dataToSend = displayedDataList[index];
