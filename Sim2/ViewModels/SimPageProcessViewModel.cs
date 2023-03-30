@@ -140,12 +140,12 @@ namespace Sim2.ViewModels
         public Dictionary<int, List<string>> SelectedComboItemsPerTab
         {
             get { return _selectedComboItemsPerTab; }
-            set 
-            { 
+            set
+            {
                 _selectedComboItemsPerTab = value;
                 OnPropertyChanged(nameof(SelectedComboItemsPerTab));
             }
-        }        
+        }
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

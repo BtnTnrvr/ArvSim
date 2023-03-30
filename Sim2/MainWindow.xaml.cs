@@ -23,7 +23,7 @@ namespace Sim2
         {
             InitializeComponent();
             tabControl.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
-            _processviewModel= new SimPageProcessViewModel();
+            _processviewModel = new SimPageProcessViewModel();
         }
         public List<PacketModel> ProcessData(string fileContents)
         {
@@ -64,7 +64,7 @@ namespace Sim2
             newTab.Content = new SimPageUserControl2(itemList, tabIndex);
             globalIndex++;
             tabControl.Items.Add(newTab);
-            _processviewModel.SelectedComboItemsPerTab.Add(tabIndex, new List<string>()); 
+            _processviewModel.SelectedComboItemsPerTab.Add(tabIndex, new List<string>());
         }
         private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
         {
@@ -85,8 +85,10 @@ namespace Sim2
             deleteItem.Click += (sender, e) => // Set up a click event handler for the delete MenuItem that removes the TabItem from the tabControl's Items collection.
             {
                 _processviewModel = new SimPageProcessViewModel();
-                _processviewModel.IsActive = false; // IsActive property that will stopped the iteration after delete
-                tabControl.Items.Remove(tabItem);
+                _processviewModel.IsActive = false; // IsActive property that will stopped the iteration after delete               
+                int tabIndex = (int)tabItem.Tag;
+                _processviewModel.SelectedComboItemsPerTab.Remove(tabIndex); // Remove the selected item from the list for the deleted tab
+                tabControl.Items.Remove(tabItem); // Remove the tab from the tab control
             };
             menu.Items.Add(deleteItem);
             return menu;

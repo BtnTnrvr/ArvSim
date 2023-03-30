@@ -3,6 +3,7 @@ using Sim2.Models;
 using Sim2.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,15 +15,17 @@ namespace Sim2.UserControls
     {
         private SimPageProcessViewModel _processviewModel;
         private ProcessHelper _processHelper;
-        private int _tabIndex;        
+        private MessageHelper _messageHelper;
+        private int _tabIndex;
         public SimPageUserControl2(List<PacketModel> items, int tabIndex = -1)
         {
             _tabIndex = tabIndex;
             InitializeComponent();
 
+            _messageHelper = new MessageHelper(items, this);
+
             _processviewModel = new SimPageProcessViewModel(items); // initialize the _processviewModel instance                                 
             DataContext = _processviewModel;
-            _processviewModel.PopulateRegionLists(items); // Getting the regions from viewmodel  
 
             _processHelper = new ProcessHelper(items, this, _processviewModel); // Pass a reference to this UserControl to the ProcessHelper constructor  
 
@@ -30,8 +33,8 @@ namespace Sim2.UserControls
             btnPause.IsEnabled = false;
             btnDateTimer.IsEnabled = false;
 
-            DriverNameTextBox.TextChanged += Input_TextChanged; // Is there an input in the textbox and combobox
-            comboBoxTestexa.SelectionChanged += Input_TextChanged;
+            DriverNameTextBox.TextChanged += Input_ValueChanged; // Is there an input in the textbox and combobox
+            comboBoxTestexa.SelectionChanged += Input_ValueChanged;
         }
         public void ProcessItems()
         {
@@ -71,43 +74,6 @@ namespace Sim2.UserControls
                 }
             });
             thread.Start();
-        }
-        public void Message()
-        {
-            _processviewModel.result = MessageBox.Show(
-            "Number of distincts all regions: " + _processviewModel.RegionList.Count + "\r\n" +
-            "Number of distinct region1: " + _processviewModel.Region1List.Count + "\r\n" +
-            "Number of distinct region2: " + _processviewModel.Region2List.Count + "\r\n" +
-            "Number of distinct region3: " + _processviewModel.Region3List.Count + "\r\n" +
-            "Number of distinct region4: " + _processviewModel.Region4List.Count + "\r\n" +
-            "Number of distinct region5: " + _processviewModel.Region5List.Count + "\r\n" +
-            "Driver name changed. New driver name: " + DriverNameTextBox.Text + "\r\n" +
-            "Device number changed. New device number: " + comboBoxTestexa.Text,
-            "Changes has been detected!", MessageBoxButton.OKCancel);
-        }
-        public void MessageAction()
-        {
-            DriverNameTextBox.IsEnabled = false;
-            comboBoxTestexa.IsEnabled = false;
-
-            if (_processviewModel.result == MessageBoxResult.OK)
-            {
-                btnContinue.IsEnabled = false;
-                btnPause.IsEnabled = true;
-
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    ProcessItems();
-                }));
-            }
-            else
-            {
-                btnContinue.IsEnabled = true;
-                btnPause.IsEnabled = false;
-                DriverNameTextBox.IsEnabled = true;
-                comboBoxTestexa.IsEnabled = true;
-                return;
-            }
         }
         private void EditMenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -168,8 +134,8 @@ namespace Sim2.UserControls
             }
             else
             {
-                Message();
-                MessageAction();
+                _messageHelper.Message();
+                _messageHelper.MessageAction();
             }
             _processviewModel.IsPaused = false;
             if (btnPause.IsEnabled == true)
@@ -192,7 +158,7 @@ namespace Sim2.UserControls
                 btnPause.IsEnabled = false;
             }
         }
-        private void Input_TextChanged(object sender, EventArgs e)
+        private void Input_ValueChanged(object sender, EventArgs e)
         {
             if (DriverNameTextBox.Text.Trim().Length > 0 && comboBoxTestexa.SelectedItem != null)
             {
@@ -205,7 +171,7 @@ namespace Sim2.UserControls
                 btnDateTimer.IsEnabled = false;
             }
         }
-        private void CheckBox_Checked(object sender, RoutedEventArgs e) // Handles the Reverse and Forward loop checked values
+        private void CheckBox_Checked(object sender, RoutedEventArgs e) // Handles the reverse and forward, forward loop checked values
         {
             CheckBox checkBox = (CheckBox)sender;
             if (checkBox == chkReverseLoop)
@@ -238,32 +204,48 @@ namespace Sim2.UserControls
             if (comboBoxTestexa.SelectedItem is ComboBoxItem comboBoxItem)
             {
                 string selectedTestexa = (string)comboBoxItem.Content;
-                string updatedPackageurl = WebRequestHelper.packageurl.Replace("{0}", selectedTestexa); // Replacing chosen device with placeholder
-                _processviewModel.PackageUrl = updatedPackageurl;
-                
-                int currentTabIndex = (int)((TabItem)Parent).Tag; // Disable the selected item in other tabs
-                foreach (var kvp in _processviewModel.SelectedComboItemsPerTab)
-                {
-                    int tabIndex = kvp.Key;
-                    List<string> selectedItems = kvp.Value;
-                    if (tabIndex != currentTabIndex && selectedItems.Contains(selectedTestexa))
-                    {
-                        comboBoxTestexa.SelectedItem = null;
-                        comboBoxTestexa.IsEnabled = false;
-                        comboBoxTestexa.IsEnabled = true;
-                        MessageBox.Show("This device is already selected in another tab.", "Device already selected", MessageBoxButton.OK);
-                        return;
-                    }
-                }                
-                _processviewModel.SelectedComboItemsPerTab[currentTabIndex].Clear(); // Add the selected item to the list for the current tab 
-                _processviewModel.SelectedComboItemsPerTab[currentTabIndex].Add(selectedTestexa);
+                CompareSelectedItems(selectedTestexa);
             }
             else if (comboBoxTestexa.SelectedItem is StackPanel stackPanel)
             {
                 string selectedTestexa = (string)((TextBox)stackPanel.Children[1]).Text;
-                string updatedPackageurl = WebRequestHelper.packageurl.Replace("{0}", selectedTestexa); // Replacing entered device with placeholder
-                _processviewModel.PackageUrl = updatedPackageurl;
+                if (string.IsNullOrEmpty(selectedTestexa)) return;
+                CompareSelectedItems(selectedTestexa);
             }
+        }
+        private void CheckSelectedItems(string selectedTestexa, int currentTabIndex)
+        {
+            foreach (var keyValuePair in _processviewModel.SelectedComboItemsPerTab)
+            {
+                int tabIndex = keyValuePair.Key;
+                List<string> selectedItems = keyValuePair.Value;
+                if (tabIndex != currentTabIndex && selectedItems.Contains(selectedTestexa))
+                {
+                    if (comboBoxTestexa.SelectedItem is ComboBoxItem)
+                    {
+                        comboBoxTestexa.SelectedItem = null;
+                    }
+                    else if (comboBoxTestexa.SelectedItem is StackPanel stackPanel)
+                    {
+                        ((TextBox)stackPanel.Children[1]).Clear();
+                        comboBoxTestexa.SelectedItem = null;
+                    }
+                    MainWindow mainWindow = (MainWindow)Window.GetWindow(this);
+                    TabItem tabItem = mainWindow.tabControl.Items.Cast<TabItem>().FirstOrDefault(item => (int)item.Tag == tabIndex);
+                    string tabName = tabItem?.Header?.ToString() ?? $"Tab {tabIndex}";
+                    MessageBox.Show($"This device is already selected in tab '{tabName}'.", "Device already selected", MessageBoxButton.OK);
+                    return;
+                }
+            }
+        }
+        private void CompareSelectedItems(string selectedTestexa)
+        {
+            string updatedPackageurl = WebRequestHelper.packageurl.Replace("{0}", selectedTestexa);
+            _processviewModel.PackageUrl = updatedPackageurl;
+            int currentTabIndex = (int)((TabItem)Parent).Tag;
+            CheckSelectedItems(selectedTestexa, currentTabIndex);
+            _processviewModel.SelectedComboItemsPerTab[currentTabIndex].Clear();
+            _processviewModel.SelectedComboItemsPerTab[currentTabIndex].Add(selectedTestexa);
         }
         private void IterationChecker()
         {
