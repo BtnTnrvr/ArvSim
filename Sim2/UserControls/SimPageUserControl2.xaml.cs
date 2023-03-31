@@ -193,9 +193,20 @@ namespace Sim2.UserControls
             }
             else if (comboBoxTestexa.SelectedItem is StackPanel stackPanel)
             {
+                TextBox textBox = (TextBox)stackPanel.Children[1];
                 string selectedTestexa = (string)((TextBox)stackPanel.Children[1]).Text;
                 if (string.IsNullOrEmpty(selectedTestexa)) return;
                 CompareSelectedItems(selectedTestexa);
+
+                textBox.TextChanged += (s, ev) => // Add TextChanged event handler to the TextBox
+                {
+                    string newText = ((TextBox)s).Text;
+                    if (newText != selectedTestexa)
+                    {
+                        CompareSelectedItems(newText);
+                        selectedTestexa = newText;
+                    }
+                };
             }
         }
         private void CheckSelectedItems(string selectedTestexa, int currentTabIndex)

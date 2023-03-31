@@ -4,6 +4,7 @@ using System.Windows;
 using Sim2.ViewModels;
 using Sim2.Models;
 using Sim2.UserControls;
+using System.Windows.Controls;
 
 namespace Sim2.Helper
 {
@@ -19,6 +20,9 @@ namespace Sim2.Helper
         }
         public void Message()
         {
+            string selectedText = ((_userControl.comboBoxTestexa.SelectedItem as ComboBoxItem)?.Content ?? "").ToString(); // For printing selected devices
+            string typedText = (_userControl.comboBoxTestexa.SelectedItem as StackPanel)?.Children[1] is TextBox textBox ? textBox.Text : ""; // For printing typed devices 
+            string displayedText = selectedText + typedText;
             _processviewModel.result = MessageBox.Show(
             "Number of distincts all regions: " + _processviewModel.RegionList.Count + "\r\n" +
             "Number of distinct region1: " + _processviewModel.Region1List.Count + "\r\n" +
@@ -27,7 +31,7 @@ namespace Sim2.Helper
             "Number of distinct region4: " + _processviewModel.Region4List.Count + "\r\n" +
             "Number of distinct region5: " + _processviewModel.Region5List.Count + "\r\n" +
             "Driver name changed. New driver name: " + _userControl.DriverNameTextBox.Text + "\r\n" +
-            "Device number changed. New device number: " + _userControl.comboBoxTestexa.SelectedItem,
+            "Device number changed. New device number: " + displayedText,
             "Changes has been detected!", MessageBoxButton.OKCancel);
         }
         public void MessageAction()
